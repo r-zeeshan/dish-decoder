@@ -1,3 +1,5 @@
+# spoonacular.py
+
 import requests
 
 class SpoonacularClient:
