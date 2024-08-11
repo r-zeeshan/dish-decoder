@@ -7,7 +7,7 @@ import os
 
 # Initialize API keys
 spoonacular_api_key = st.secrets["SPOONACULAR_API_KEY"]
-gemini_api_key = st.secrets("GOOGLE_API_KEY")
+gemini_api_key = st.secrets["GOOGLE_API_KEY"]
 
 
 
