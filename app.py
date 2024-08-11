@@ -3,13 +3,10 @@
 import streamlit as st
 from spoonacular import SpoonacularClient
 import google.generativeai as genai
-import os
 
 # Initialize API keys
 spoonacular_api_key = st.secrets["SPOONACULAR_API_KEY"]
 gemini_api_key = st.secrets["GOOGLE_API_KEY"]
-
-
 
 # Configure the Gemini API
 genai.configure(api_key=gemini_api_key)
@@ -53,6 +50,8 @@ if st.button("Get Recipes"):
         for recipe in recipes:
             st.subheader(recipe['title'])
             st.image(recipe['image'])
-            st.markdown(f"[View Full Recipe]({recipe['sourceUrl']})")
+            # Use .get() to handle missing keys
+            source_url = recipe.get('sourceUrl', 'URL not available')
+            st.markdown(f"[View Full Recipe]({source_url})")
     else:
         st.write("No recipes found for the given preferences.")
