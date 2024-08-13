@@ -12,6 +12,22 @@ genai.configure(api_key=gemini_api_key)
 # Initialize the Spoonacular API client
 spoonacular_client = SpoonacularClient(spoonacular_api_key)
 
+@st.cache_resource
+def load_gemini_model():
+    # Cache the Gemini model to avoid reloading on every interaction
+    return genai.GenerativeModel('gemini-1.5-pro-latest')
+
+def process_natural_language_input(user_input, model):
+    response = model.generate_content(f"Analyze this input for meal preferences: {user_input}")
+    return response.text
+
+def fetch_recipes(diets, user_input):
+    # Combine dietary preferences with user input
+    query = " ".join(diets) + " " + user_input
+    # Fetch recipes from Spoonacular API
+    recipes = spoonacular_client.get_recipes_by_diet(diets, number=5)
+    return recipes
+
 st.title("Dish Decoder - AI Meal Planner")
 
 # Checkbox for dietary preferences
@@ -40,22 +56,11 @@ st.header("Tell us about your meal preference")
 user_input = st.text_area("Enter any specific requests or dietary goals:")
 
 if st.button("Get Recipes"):
+    # Load the Gemini model (cached)
+    model = load_gemini_model()
+
     # Analyze natural language input with Gemini
-    def process_natural_language_input(user_input):
-        model = genai.GenerativeModel('gemini-1.5-pro-latest')
-        response = model.generate_content(f"Analyze this input for meal preferences: {user_input}")
-        return response.text
-
-    # Fetch recipes from Spoonacular
-    def fetch_recipes(diets, user_input):
-        # Combine dietary preferences with user input
-        query = " ".join(diets) + " " + user_input
-        # Fetch recipes from Spoonacular API
-        recipes = spoonacular_client.get_recipes_by_diet(diets, number=5)
-        return recipes
-
-    # Display the analysis
-    analysis = process_natural_language_input(user_input)
+    analysis = process_natural_language_input(user_input, model)
     st.write(f"Analysis: {analysis}")
 
     # Fetch and display recipes
