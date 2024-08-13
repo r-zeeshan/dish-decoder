@@ -69,7 +69,6 @@ if st.button("Get Recipes"):
         for recipe in recipes:
             st.subheader(recipe['title'])
             st.image(recipe['image'])
-            # Use .get() to handle missing keys
             source_url = recipe.get('sourceUrl', 'URL not available')
             st.markdown(f"[View Full Recipe]({source_url})")
     else:
