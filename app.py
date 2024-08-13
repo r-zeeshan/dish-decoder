@@ -24,8 +24,7 @@ diet_options = [
     "All Meat", 
     "High Protein", 
     "Gym Friendly", 
-    "Keto", 
-    "Paleo"
+    "Keto"
 ]
 
 # Create a grid layout for checkboxes with 4 columns
