@@ -1,12 +1,10 @@
-# app.py
-
 import streamlit as st
 from spoonacular import SpoonacularClient
 import google.generativeai as genai
 
 # Initialize API keys
 spoonacular_api_key = st.secrets["SPOONACULAR_API_KEY"]
-gemini_api_key = st.secrets["GOOGLE_API_KEY"]
+gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
 # Configure the Gemini API
 genai.configure(api_key=gemini_api_key)
@@ -16,10 +14,20 @@ spoonacular_client = SpoonacularClient(spoonacular_api_key)
 
 st.title("Dish Decoder - AI Meal Planner")
 
-# Sidebar for dietary preferences
-st.sidebar.header("Select Dietary Preferences")
-diet_options = ["None", "Vegan", "Vegetarian", "Gluten-Free", "Low-Carb"]
-selected_diets = st.sidebar.multiselect("Choose your diet:", diet_options)
+# Checkbox for dietary preferences
+st.header("Select Your Dietary Preferences")
+diet_options = [
+    "Vegan", 
+    "Vegetarian", 
+    "Gluten-Free", 
+    "Low-Carb", 
+    "All Meat", 
+    "High Protein", 
+    "Gym Friendly", 
+    "Keto", 
+    "Paleo"
+]
+selected_diets = [option for option in diet_options if st.checkbox(option)]
 
 # User input for natural language preferences
 st.header("Tell us about your meal preference")
