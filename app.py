@@ -27,7 +27,14 @@ diet_options = [
     "Keto", 
     "Paleo"
 ]
-selected_diets = [option for option in diet_options if st.checkbox(option)]
+
+# Create a grid layout for checkboxes with 4 columns
+selected_diets = []
+columns = st.columns(4)  # 4 columns for grid layout
+for i, option in enumerate(diet_options):
+    with columns[i % 4]:  # Position each checkbox in the correct column
+        if st.checkbox(option):
+            selected_diets.append(option)
 
 # User input for natural language preferences
 st.header("Tell us about your meal preference")
