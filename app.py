@@ -25,9 +25,10 @@ def generate_recipe_names(user_input, model):
     recipe_names = response.text.split(',')
     return [name.strip() for name in recipe_names]
 
-def fetch_recipe_details(recipe_name):
-    # Fetch recipe details from Spoonacular API by recipe name
-    recipes = spoonacular_client.get_recipes_by_diet(recipe_name, number=1)
+def fetch_recipe_details_by_ingredients(recipe_name):
+    # Fetch recipe details from Spoonacular API by guessing the ingredients from the recipe name
+    ingredients = recipe_name.split()  # Split the recipe name into potential ingredients
+    recipes = spoonacular_client.get_recipes_by_ingredients(ingredients, number=1)
     if recipes:
         return recipes[0]
     return None
@@ -67,9 +68,9 @@ if st.button("Get Recipes"):
     recipe_names = generate_recipe_names(user_input, model)
     st.write(f"Suggested Recipes: {', '.join(recipe_names)}")
 
-    # Fetch and display recipe details from Spoonacular
+    # Fetch and display recipe details from Spoonacular based on ingredients
     for recipe_name in recipe_names:
-        recipe_details = fetch_recipe_details(recipe_name)
+        recipe_details = fetch_recipe_details_by_ingredients(recipe_name)
         if recipe_details:
             st.subheader(recipe_details['title'])
             st.image(recipe_details['image'])
