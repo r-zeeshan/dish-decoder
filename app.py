@@ -18,25 +18,20 @@ def load_gemini_model():
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
 def generate_recipe_names(user_input, model):
-    # Use Gemini API to generate a list of recipe names
-    prompt = """
-            Based on the following preferences, suggest some recipe names. Please provide a comma-separated list of recipes that fit these preferences:
-
-            {user_input}
-
-            Sample Output:
-            Chicken Curry, Chicken Biryani, Pasta
-            """
-
+    # Use Gemini API to generate a list of recipe names only
+    prompt = f"Suggest some recipe names based on these preferences: {user_input}. Only list the recipe names."
     response = model.generate_content(prompt)
-    recipe_names = response.text.split(',')
-    return [name.strip() for name in recipe_names]
+    # Assuming the response is a newline-separated list of recipe names
+    recipe_names = response.text.split('\n')
+    return [name.strip() for name in recipe_names if name.strip()]
 
 def fetch_recipe_details(recipe_name):
     # Fetch recipe details from Spoonacular API by recipe name
-    recipes = spoonacular_client.get_recipes_by_diet(recipe_name, number=1)
-    if recipes:
-        return recipes[0]
+    # Note: Spoonacular's API requires searching by ingredient or other criteria. Adjusting to find a close match.
+    query_params = {"query": recipe_name, "number": 1}
+    response = spoonacular_client.get_recipes_by_diet(query_params["query"], number=1)
+    if response:
+        return response[0]  # Return the first matching recipe
     return None
 
 st.title("Dish Decoder - AI Meal Planner")
@@ -72,15 +67,19 @@ if st.button("Get Recipes"):
 
     # Generate recipe names using Gemini
     recipe_names = generate_recipe_names(user_input, model)
-    st.write(f"Suggested Recipes: {', '.join(recipe_names)}")
+    
+    if recipe_names:
+        st.write(f"Suggested Recipes: {', '.join(recipe_names)}")
 
-    # Fetch and display recipe details from Spoonacular
-    for recipe_name in recipe_names:
-        recipe_details = fetch_recipe_details(recipe_name)
-        if recipe_details:
-            st.subheader(recipe_details['title'])
-            st.image(recipe_details['image'])
-            source_url = recipe_details.get('sourceUrl', 'URL not available')
-            st.markdown(f"[View Full Recipe]({source_url})")
-        else:
-            st.write(f"Details not found for recipe: {recipe_name}")
+        # Fetch and display recipe details from Spoonacular
+        for recipe_name in recipe_names:
+            recipe_details = fetch_recipe_details(recipe_name)
+            if recipe_details:
+                st.subheader(recipe_details['title'])
+                st.image(recipe_details['image'])
+                source_url = recipe_details.get('sourceUrl', 'URL not available')
+                st.markdown(f"[View Full Recipe]({source_url})")
+            else:
+                st.write(f"Details not found for recipe: {recipe_name}")
+    else:
+        st.write("No recipes could be generated from the input.")
