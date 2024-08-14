@@ -19,9 +19,16 @@ def load_gemini_model():
 
 def generate_recipe_names(user_input, model):
     # Use Gemini API to generate a list of recipe names
-    prompt = f"Based on the following preferences, suggest some recipe names: {user_input}"
+    prompt = """
+            Based on the following preferences, suggest some recipe names. Please provide a comma-separated list of recipes that fit these preferences:
+
+            {user_input}
+
+            Sample Output:
+            Chicken Curry, Chicken Biryani, Pasta
+            """
+
     response = model.generate_content(prompt)
-    # Assuming the response is a comma-separated list of recipe names
     recipe_names = response.text.split(',')
     return [name.strip() for name in recipe_names]
 
