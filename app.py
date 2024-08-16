@@ -32,7 +32,6 @@ def fetch_recipe_details_by_ingredients(recipe_name):
 
 st.title("Dish Decoder - AI Meal Planner")
 
-# Checkbox for dietary preferences
 st.header("Select Your Dietary Preferences")
 diet_options = [
     "Vegan", 
