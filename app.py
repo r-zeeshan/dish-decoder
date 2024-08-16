@@ -24,7 +24,7 @@ def generate_recipe_names(user_input, model):
     return [name.strip() for name in recipe_names]
 
 def fetch_recipe_details_by_ingredients(recipe_name):
-    ingredients = recipe_name.split()  # Split the recipe name into potential ingredients
+    ingredients = recipe_name.split()  
     recipes = spoonacular_client.get_recipes_by_ingredients(ingredients, number=1)
     if recipes:
         return recipes[0]
