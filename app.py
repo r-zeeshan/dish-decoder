@@ -14,7 +14,6 @@ spoonacular_client = SpoonacularClient(spoonacular_api_key)
 
 @st.cache_resource
 def load_gemini_model():
-    # Cache the Gemini model to avoid reloading on every interaction
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
 def generate_recipe_names(user_input, model):
