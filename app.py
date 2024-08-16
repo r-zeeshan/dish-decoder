@@ -17,7 +17,6 @@ def load_gemini_model():
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
 def generate_recipe_names(user_input, model):
-    # Use Gemini API to generate a list of recipe names
     prompt = f"Suggest some recipe names based on these preferences: {user_input}. Only list the recipe names, nothing else extra, just the recipes names only."
     response = model.generate_content(prompt)
     # Assuming the response is a comma-separated list of recipe names
