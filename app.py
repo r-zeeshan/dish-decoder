@@ -16,15 +16,16 @@ spoonacular_client = SpoonacularClient(spoonacular_api_key)
 def load_gemini_model():
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
-def generate_recipe_names(user_input, model):
-    prompt = f"Suggest some recipe names based on these preferences: {user_input}. Only list the recipe names, nothing else extra, just the recipes names only."
+def analyze_and_select_recipes(user_input, model):
+    # Use Gemini API to analyze user preferences and generate recipe names
+    prompt = f"Based on these preferences: {user_input}, suggest some appropriate recipe names. Only return the recipe names, nothing else."
     response = model.generate_content(prompt)
-    # Assuming the response is a comma-separated list of recipe names
     recipe_names = response.text.split(',')
-    return [name.strip() for name in recipe_names]
+    return [name.strip() for name in recipe_names if name.strip()]
 
 def fetch_recipe_details_by_ingredients(recipe_name):
-    ingredients = recipe_name.split()  
+    # Use the recipe name to guess potential ingredients and fetch recipe details
+    ingredients = recipe_name.split()  # Split the recipe name into potential ingredients
     recipes = spoonacular_client.get_recipes_by_ingredients(ingredients, number=1)
     if recipes:
         return recipes[0]
@@ -32,6 +33,7 @@ def fetch_recipe_details_by_ingredients(recipe_name):
 
 st.title("Dish Decoder - AI Meal Planner")
 
+# Checkbox for dietary preferences
 st.header("Select Your Dietary Preferences")
 diet_options = [
     "Vegan", 
@@ -46,9 +48,9 @@ diet_options = [
 
 # Create a grid layout for checkboxes with 4 columns
 selected_diets = []
-columns = st.columns(4)  # 4 columns for grid layout
+columns = st.columns(4)
 for i, option in enumerate(diet_options):
-    with columns[i % 4]:  # Position each checkbox in the correct column
+    with columns[i % 4]:
         if st.checkbox(option):
             selected_diets.append(option)
 
@@ -60,9 +62,8 @@ if st.button("Get Recipes"):
     # Load the Gemini model (cached)
     model = load_gemini_model()
 
-    # Generate recipe names using Gemini
-    recipe_names = generate_recipe_names(user_input, model)
-    st.write(f"Suggested Recipes: {', '.join(recipe_names)}")
+    # Analyze user input and generate recipe names in the backend
+    recipe_names = analyze_and_select_recipes(user_input, model)
 
     # Fetch and display recipe details from Spoonacular based on ingredients
     for recipe_name in recipe_names:
