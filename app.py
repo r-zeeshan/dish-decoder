@@ -66,7 +66,6 @@ if st.button("Get Recipes"):
     # Analyze user input and generate recipe names in the backend
     recipe_names = analyze_and_select_recipes(user_input, model)
 
-    # Fetch and display recipe details from Spoonacular based on ingredients
     for recipe_name in recipe_names:
         recipe_details = fetch_recipe_details_by_ingredients(recipe_name)
         if recipe_details:
