@@ -73,7 +73,7 @@ class SpoonacularClient:
         endpoint = f"{self.base_url}/recipes/{recipe_id}/information"
         params = {
             "apiKey": self.api_key,
-            "includeNutrition": False  # You can set this to True if you want nutritional info
+            "includeNutrition": False  
         }
         try:
             response = requests.get(endpoint, params=params)
