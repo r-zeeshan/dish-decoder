@@ -63,6 +63,26 @@ class SpoonacularClient:
             print(f"An error occurred: {e}")
             return []
 
+    def get_recipe_information(self, recipe_id):
+        """
+        Fetch detailed information for a specific recipe by its ID.
+        
+        :param recipe_id: The ID of the recipe.
+        :return: A dictionary with detailed recipe information.
+        """
+        endpoint = f"{self.base_url}/recipes/{recipe_id}/information"
+        params = {
+            "apiKey": self.api_key,
+        }
+        try:
+            response = requests.get(endpoint, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"An error occurred: {e}")
+            return None
+
+
     def get_nutritional_info(self, recipe_id):
         """
         Fetch detailed nutritional information for a recipe.
