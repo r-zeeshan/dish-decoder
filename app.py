@@ -61,3 +61,15 @@ if st.button("Get Recipes"):
 
     # Display the generated detailed recipe instructions
     st.markdown(detailed_recipe)
+
+
+st.markdown(
+    """
+    <style>
+    footer {visibility: hidden;}
+    .footer {visibility: visible; position: relative; bottom: 10px; text-align: center;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+st.markdown('<div class="footer">Developed by Zeeshan Hameed</div>', unsafe_allow_html=True)
