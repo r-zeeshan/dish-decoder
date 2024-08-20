@@ -11,13 +11,15 @@ genai.configure(api_key=gemini_api_key)
 def load_gemini_model():
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
-def generate_recipe_suggestions(user_input, selected_diets, model):
+def generate_detailed_recipe(user_input, selected_diets, model):
     # Construct a detailed prompt using user input and dietary preferences
     diet_str = ", ".join(selected_diets) if selected_diets else "no specific dietary preferences"
     prompt = (f"You are a master chef AI. Based on the following dietary preferences: {diet_str}, "
-              f"and the user's request: '{user_input}', suggest some creative and delicious recipe ideas. "
-              "For each recipe, include the name, a brief description, key ingredients, and any relevant notes "
-              "on preparation or serving. Please do not include any unnecessary details or explanations; just the recipes.")
+              f"and the user's request: '{user_input}', suggest a creative and delicious recipe. "
+              "Provide a step-by-step guide including: \n"
+              "1. A list of all ingredients with exact quantities.\n"
+              "2. Detailed, sequential cooking instructions from preparation to serving.\n"
+              "The instructions should be clear and easy to follow for someone cooking at home.")
     
     # Generate the content using the Gemini model
     response = model.generate_content(prompt)
@@ -54,8 +56,8 @@ if st.button("Get Recipes"):
     # Load the Gemini model (cached)
     model = load_gemini_model()
 
-    # Generate recipe suggestions using Gemini
-    recipe_suggestions = generate_recipe_suggestions(user_input, selected_diets, model)
+    # Generate detailed recipe instructions using Gemini
+    detailed_recipe = generate_detailed_recipe(user_input, selected_diets, model)
 
-    # Display the generated recipe suggestions
-    st.markdown(recipe_suggestions)
+    # Display the generated detailed recipe instructions
+    st.markdown(detailed_recipe)
