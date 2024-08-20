@@ -1,39 +1,27 @@
 import streamlit as st
-from spoonacular import SpoonacularClient
 import google.generativeai as genai
 
-# Initialize API keys
-spoonacular_api_key = st.secrets["SPOONACULAR_API_KEY"]
+# Initialize API key for Gemini
 gemini_api_key = st.secrets["GEMINI_API_KEY"]
 
 # Configure the Gemini API
 genai.configure(api_key=gemini_api_key)
 
-# Initialize the Spoonacular API client
-spoonacular_client = SpoonacularClient(spoonacular_api_key)
-
 @st.cache_resource
 def load_gemini_model():
     return genai.GenerativeModel('gemini-1.5-pro-latest')
 
-def analyze_and_select_recipes(user_input, model):
-    # Use Gemini API to analyze user preferences and generate recipe names
-    prompt = f"Based on these preferences: {user_input}, suggest some appropriate recipe names. Only return the recipe names, nothing else."
+def generate_recipe_suggestions(user_input, selected_diets, model):
+    # Construct a detailed prompt using user input and dietary preferences
+    diet_str = ", ".join(selected_diets) if selected_diets else "no specific dietary preferences"
+    prompt = (f"You are a master chef AI. Based on the following dietary preferences: {diet_str}, "
+              f"and the user's request: '{user_input}', suggest some creative and delicious recipe ideas. "
+              "For each recipe, include the name, a brief description, key ingredients, and any relevant notes "
+              "on preparation or serving. Please do not include any unnecessary details or explanations; just the recipes.")
+    
+    # Generate the content using the Gemini model
     response = model.generate_content(prompt)
-    recipe_names = response.text.split(',')
-    return [name.strip() for name in recipe_names if name.strip()]
-
-def fetch_recipe_details_by_ingredients(recipe_name):
-    # Use the recipe name to guess potential ingredients and fetch recipe details
-    ingredients = recipe_name.split()  # Split the recipe name into potential ingredients
-    recipes = spoonacular_client.get_recipes_by_ingredients(ingredients, number=1)
-    if recipes:
-        recipe_id = recipes[0]['id']  # Get the first recipe's ID
-        # Fetch detailed recipe information using the recipe ID
-        detailed_recipe = spoonacular_client.get_recipe_information(recipe_id)
-        return detailed_recipe
-    return None
-
+    return response.text
 
 st.title("Dish Decoder - AI Meal Planner")
 
@@ -66,15 +54,8 @@ if st.button("Get Recipes"):
     # Load the Gemini model (cached)
     model = load_gemini_model()
 
-    # Analyze user input and generate recipe names in the backend
-    recipe_names = analyze_and_select_recipes(user_input, model)
+    # Generate recipe suggestions using Gemini
+    recipe_suggestions = generate_recipe_suggestions(user_input, selected_diets, model)
 
-    for recipe_name in recipe_names:
-        recipe_details = fetch_recipe_details_by_ingredients(recipe_name)
-        if recipe_details:
-            st.subheader(recipe_details['title'])
-            st.image(recipe_details['image'])
-            source_url = recipe_details.get('sourceUrl', 'URL not available')
-            st.markdown(f"[View Full Recipe]({source_url})")
-        else:
-            st.write(f"Details not found for recipe: {recipe_name}")
+    # Display the generated recipe suggestions
+    st.markdown(recipe_suggestions)
